@@ -1,4 +1,4 @@
-# Curriculum Overview
+# Modules Navigator
 
 1. [JWT Authentication/Authorization](https://github.com/StartSteps-Digital-Education-GmbH/Course-Navigator/tree/main/Curriculum/01.%20JWT%20Authentication)
 2. [Unit Testing with Jest](https://github.com/StartSteps-Digital-Education-GmbH/Course-Navigator/tree/main/Curriculum/02.%20Unit%20Testing%20with%20Jest)
