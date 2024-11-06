@@ -1,1 +1,1 @@
-# Course-Navigator
+# Course Navigator
