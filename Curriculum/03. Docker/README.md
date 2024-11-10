@@ -34,7 +34,7 @@
 
 8. **Docker YouTube Channel**:
    - The official Docker YouTube channel features tutorials, webinars, and presentations that can help learners visualize concepts and see Docker in action.
-   - [Docker YouTube Channel](https://www.youtube.com/c/Docker)
+   - [Docker YouTube Channel](https://www.youtube.com/@DockerInc)
 
 9. **Docker GitHub Repository**:
    - The official Docker GitHub repository contains the source code for Docker and is a good resource for developers interested in contributing or understanding the underlying code.
