@@ -1,5 +1,7 @@
 ## Introduction to Docker - Absolute Beginner Level
 
+[A Docker Tutorial for Beginners](https://docker-curriculum.com/)
+
 ### Session 1: Introduction to Containers and Docker (45 minutes)
 
 #### Theory (20 minutes)
