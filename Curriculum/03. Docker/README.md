@@ -42,4 +42,4 @@
 
 10. **Docker Training and Certification**:
     - Docker offers official training courses and certification programs for those looking to validate their skills and knowledge in Docker.
-    - [Docker Training](https://www.docker.com/training)
+    - [Docker Training](https://docs.docker.com/get-started/resources/#docker-training)
