@@ -1,6 +1,9 @@
-## Learning plan for Day 2
+## Learning plan for Day 124:
 
 The plan is focusing on the Dockerization of the Travel Booking System. This plan will start with an introduction to Dockerization, followed by a simple TypeScript code example, and then dive into the Dockerization of the Travel Booking System.
+
+### Reference:
+[Dockerize Your TypeScript Application](https://chinwendu.medium.com/how-to-dockerize-your-typescript-application-with-multi-stage-build-a-step-by-step-guide-56e7c4274088)
 
 ## Abstract
 The approach to using Docker in development can vary based on the specific needs of a project and the preferences of the development team. Here are the two common approaches regarding development inside Docker versus migrating code to Docker:
