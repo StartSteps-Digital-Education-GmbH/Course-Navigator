@@ -1,7 +1,7 @@
 # Docker
 
 - [Day 123 - November 11, 2024](https://github.com/StartSteps-Digital-Education-GmbH/Course-Navigator/tree/main/Curriculum/03.%20Docker/Day%20123): Introduction to Docker
-
+- [Day 124 - November 12, 2024](https://github.com/StartSteps-Digital-Education-GmbH/Course-Navigator/tree/main/Curriculum/03.%20Docker/Day%20124): Dockerizing the Travel Booking System
 
 ## References:
 1. **Docker Official Documentation**:
