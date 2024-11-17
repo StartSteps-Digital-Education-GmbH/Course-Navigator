@@ -1,4 +1,4 @@
-### Healthcare management system
+### Healthcare management system (HCMS)
 To create a healthcare management system with a React TypeScript frontend that connects to the previously set up Node.js backend using Axios, we will set up a new React application inside Docker. This will involve creating a new Dockerfile for the React application, configuring Docker Compose to manage both the frontend and backend services, and installing the necessary dependencies.
 
 ### Complete Setup for React TypeScript Frontend in Docker
