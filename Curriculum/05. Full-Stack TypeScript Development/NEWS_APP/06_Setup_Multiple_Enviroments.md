@@ -1,24 +1,19 @@
-### Guide: Setup Multiple Environments for Testing, development and prod
+### Guide: Setup Multiple Environments for Testing, Development, and Production
 
-This guide incorporates:
-1. Setting up multiple environments (dev, test, prod) using `.env` files.
-2. Using Docker to manage the PostgreSQL database for all environments.
-3. Running the app and tests in a single step with the `test` command.
-4. Automatically creating databases (`dev`, `test`, `prod`) on container startup.
-5. Best practices for using `dev` and `prod` environments in Docker.
+This step-by-step guide outlines how to configure and run a Node.js application with separate environments (`dev`, `test`, `prod`) using `.env` files, Docker for PostgreSQL management, and efficient scripts for development and testing.
 
 ---
 
 ### **1. Environment Configuration**
 
-Prepare `.env` files for each environment. These will control the database and server configuration.
+Set up environment variables for each environment by creating separate `.env` files.
 
 #### **.env (Development)**
 ```env
 PORT=5000
 POSTGRES_USER=news_admin
 POSTGRES_PASSWORD=news_admin
-POSTGRES_DB=news_app_dev
+POSTGRES_DB=news_app_db
 POSTGRES_HOST=postgres
 JWT_SECRET=dev_secret
 NODE_ENV=development
@@ -40,7 +35,7 @@ NODE_ENV=test
 PORT=5000
 POSTGRES_USER=news_admin
 POSTGRES_PASSWORD=news_admin
-POSTGRES_DB=news_app_prod
+POSTGRES_DB=news_app_db
 POSTGRES_HOST=postgres
 JWT_SECRET=prod_secret
 NODE_ENV=production
@@ -48,30 +43,29 @@ NODE_ENV=production
 
 ---
 
-### **2. Database Initialization Script**
+### **2. Database Initialization**
 
-Create a script to initialize all databases when the PostgreSQL container starts. Add the following to a new file named `init-database.sh` in the project root:
+To automate database creation, write an initialization script named `init-database.sh`:
 
 #### **init-database.sh**
 ```bash
 #!/bin/bash
 set -e
 
-# Create databases
-psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
-    CREATE DATABASE news_app_dev;
+# Create the required databases
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "postgres" <<-EOSQL
+    CREATE DATABASE news_app_db;
     CREATE DATABASE news_app_test;
-    CREATE DATABASE news_app_prod;
 EOSQL
 ```
 
-Update your `docker-compose.yml` to use this script as an initialization step for PostgreSQL.
+Place this script in the project root and configure Docker to use it during PostgreSQL startup.
 
 ---
 
 ### **3. Docker Compose Configuration**
 
-Here’s an updated `docker-compose.yml`:
+Set up Docker to manage PostgreSQL and the application. Use the following `docker-compose.yml`:
 
 #### **docker-compose.yml**
 ```yaml
@@ -88,10 +82,10 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    env_file:
+      - .env.prod
     volumes:
       - ./init-database.sh:/docker-entrypoint-initdb.d/init-database.sh
-    env_file:
-      - .env
 
   news_app:
     build:
@@ -103,117 +97,93 @@ services:
       postgres:
         condition: service_healthy
     env_file:
-      - .env
+      - .env.prod
 ```
-
-- **Explanation**: The `init-database.sh` script will create the `dev`, `test`, and `prod` databases automatically. It’s mounted to the PostgreSQL container as an initialization script.
 
 ---
 
-### **4. App Initialization**
+### **4. Application Setup**
 
-Modify `src/index.ts` to ensure it works for all environments, with proper database initialization.
+Modify your app's configuration to dynamically load the correct `.env` file based on the environment.
 
-#### **src/index.ts**
+#### **config/env.ts**
 ```typescript
 import dotenv from "dotenv";
-import app from "./app";
-import { AppDataSource } from "./data-source";
 
-// Load the correct .env file based on NODE_ENV
-const envFile = process.env.NODE_ENV === "production" 
-  ? ".env.prod" 
-  : process.env.NODE_ENV === "test" 
-    ? ".env.test" 
+const envFile = process.env.NODE_ENV === "production"
+  ? ".env.prod"
+  : process.env.NODE_ENV === "test"
+    ? ".env.test"
     : ".env";
+
 dotenv.config({ path: envFile });
 
-const PORT = process.env.PORT || 5000;
-
-AppDataSource.initialize()
-  .then(() => {
-    console.log("Database connected successfully");
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  })
-  .catch((error) => {
-    console.error("Database connection error:", error);
-  });
+export const configs = {
+  PORT: process.env.PORT || 5000,
+  database: {
+    POSTGRES_HOST: process.env.POSTGRES_HOST || "postgres",
+    POSTGRES_PORT: parseInt(process.env.POSTGRES_PORT || "5432"),
+    POSTGRES_USER: process.env.POSTGRES_USER || "news_admin",
+    POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD || "news_admin",
+    POSTGRES_DB: process.env.POSTGRES_DB || "news_app_db",
+  },
+  auth: {
+    JWT_SECRET: process.env.JWT_SECRET,
+  },
+};
 ```
 
 ---
 
-### **5. Test Setup**
+### **5. Package Scripts**
 
-Tests need the app running and should use the test database. Update your Jest configuration and global setup:
+Configure scripts in `package.json` for development, testing, and production.
 
-#### **jest.config.js**
-```javascript
-module.exports = {
-  preset: "ts-jest",
-  testEnvironment: "node",
-  setupFiles: ["dotenv/config"],
-  globalSetup: "./src/tests/setupTestEnv.ts",
-};
-```
-
-#### **src/tests/setupTestEnv.ts**
-```typescript
-import { AppDataSource } from "../data-source";
-
-export default async () => {
-  process.env.NODE_ENV = "test"; // Set test environment
-  await AppDataSource.initialize(); // Initialize the test database
-};
-```
-
-#### **Test Scripts**
-
-Add a `test:run` command to start the app, run tests, and shut down the app.
-
-#### **Updated `package.json`**
+#### **package.json**
 ```json
 "scripts": {
   "dev": "nodemon -r dotenv/config src/index.ts",
+  "build": "tsc",
   "start": "NODE_ENV=production node dist/index.js",
-  "test:run": "NODE_ENV=test jest && pkill -f 'node src/index.ts'",
-  "test": "NODE_ENV=test jest",
-  "build": "tsc"
+  "test": "NODE_ENV=test jest"
 }
 ```
 
-- `test:run`: Starts the app with the `test` environment, runs Jest, and stops the app.
-
 ---
 
-### **6. Development and Production in Docker**
+### **6. Development and Production with Docker**
 
-- **Development**: Use the `.env` file to run the app in development mode.
+- **Development**: Run the app with the `.env` file for development.
   ```bash
   docker-compose up
   ```
 
-- **Production**: Switch to `.env.prod` for the production environment.
+- **Production**: Switch to the `.env.prod` file for production.
   ```bash
   docker-compose --env-file .env.prod up --build
   ```
 
 ---
 
-### **7. Run the App and Tests**
+### **7. Testing**
 
-- **Start in Development**:
+Run tests with the `test` script. Ensure the app uses the `test` environment.
+
+- **Run Tests**:
+  ```bash
+  npm run test
+  ```
+
+---
+
+### **8. Start the Application**
+
+- **Development Mode**:
   ```bash
   npm run dev
   ```
 
-- **Run Tests** (with the app):
-  ```bash
-  npm run test:run
-  ```
-
-- **Build and Start in Production**:
+- **Production Mode**:
   ```bash
   npm run build
   npm start
@@ -223,7 +193,6 @@ Add a `test:run` command to start the app, run tests, and shut down the app.
 
 ### **Summary**
 
-1. **Docker** manages PostgreSQL with automatic database creation using `init-database.sh`.
-2. Environment variables (`.env`, `.env.test`, `.env.prod`) control the app for `dev`, `test`, and `prod`.
-3. Tests run with a dedicated database and app instance (`npm run test:run`).
-4. Use `dev` during development in Docker and `prod` for production.
+1. Environment variables in `.env` files provide flexibility for development, testing, and production.
+2. Docker simplifies database setup with automatic initialization (`init-database.sh`).
+3. Efficient scripts (`npm run dev`, `npm run test`, etc.) streamline workflows for development and testing.
