@@ -129,18 +129,21 @@ export default app;
 ### **6. Jest Configuration**
 Set up Jest for testing TypeScript and ES Modules.
 
-#### `jest.config.js`
-```javascript
-module.exports = {
-  preset: "ts-jest",
-  testEnvironment: "node",
-  transform: {
-    "^.+\\.tsx?$": "ts-jest",
+#### `jest.config.json`
+```json
+{
+  "preset": "ts-jest",
+  "testEnvironment": "node",
+  "extensionsToTreatAsEsm": [".ts"],
+  "moduleNameMapper": {
+    "^(\\.{1,2}/.*)\\.js$": "$1"
   },
-  moduleNameMapper: {
-    "^(\\.{1,2}/.*)\\.js$": "$1",
-  },
-};
+  "globals": {
+    "ts-jest": {
+      "useESM": true
+    }
+  }
+}
 ```
 
 #### `babel.config.json`
