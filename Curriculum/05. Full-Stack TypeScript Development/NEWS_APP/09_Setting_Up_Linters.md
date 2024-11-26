@@ -1,6 +1,6 @@
 ### **Guide: Setting Up Linters in Your Project**
 
-This guide will help you understand and set up ** liters** for your project to maintain code quality and consistency and catch potential issues early in the development process.
+This guide will help you understand and set up **linters** for your project to maintain code quality, consistency, and catch potential issues early in the development process.
 
 ---
 
@@ -33,51 +33,77 @@ npm install --save-dev eslint @typescript-eslint/parser @typescript-eslint/eslin
 
 #### **2. Create an ESLint Configuration File**
 
-Create an `.eslintrc.json` file in the root of your project:
-```json
-{
-  "env": {
-    "browser": false,
-    "es2021": true,
-    "node": true
+Create an `eslint.config.js` file in the root of your project:
+```javascript
+import { defineConfig } from 'eslint-define-config';
+import eslintPluginPrettier from 'eslint-plugin-prettier';
+import eslintPluginImport from 'eslint-plugin-import';
+import eslintPluginTypescript from '@typescript-eslint/eslint-plugin';
+import parserTypescript from '@typescript-eslint/parser';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Normalize __dirname for ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export default defineConfig([
+  {
+    files: ['**/*.{js,ts}'],
+    ignores: ['node_modules', 'dist'],
+    languageOptions: {
+      parser: parserTypescript,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        project: path.resolve(__dirname, './tsconfig.json'), // Normalize path
+        tsconfigRootDir: __dirname,
+      },
+      globals: {
+        NodeJS: true,
+      },
+    },
+    plugins: {
+      '@typescript-eslint': eslintPluginTypescript,
+      import: eslintPluginImport,
+      prettier: eslintPluginPrettier,
+    },
+    rules: {
+      // Core ESLint rules
+      'no-unused-vars': 'off',
+      'no-console': 'warn',
+
+      // TypeScript-specific rules
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      '@typescript-eslint/consistent-type-imports': 'error',
+
+      // Import rules
+      'import/order': [
+        'error',
+        {
+          groups: [
+            ['builtin', 'external'],
+            ['internal', 'parent', 'sibling', 'index'],
+          ],
+          'newlines-between': 'always',
+        },
+      ],
+      'import/no-unresolved': 'error',
+
+      // Prettier integration
+      'prettier/prettier': 'error',
+    },
+    settings: {
+      'import/resolver': {
+        typescript: {
+          project: path.resolve(__dirname, './tsconfig.json'), // Normalize path
+        },
+      },
+    },
   },
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "ecmaVersion": 2021,
-    "sourceType": "module"
-  },
-  "plugins": ["@typescript-eslint", "prettier", "import", "node"],
-  "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended"
-  ],
-  "rules": {
-    "prettier/prettier": "error",
-    "no-console": "warn",
-    "import/order": [
-      "error",
-      {
-        "groups": [["builtin", "external", "internal"]],
-        "newlines-between": "always"
-      }
-    ],
-    "node/no-missing-import": "error",
-    "node/no-unsupported-features/es-syntax": [
-      "error",
-      {
-        "ignores": ["modules"]
-      }
-    ],
-    "@typescript-eslint/no-unused-vars": [
-      "warn",
-      {
-        "argsIgnorePattern": "^_",
-        "varsIgnorePattern": "^_"
-      }
-    ]
-  }
-}
+]);
 ```
 
 #### **3. Add a Prettier Configuration**
@@ -98,8 +124,8 @@ Create a `.prettierrc` file in the root to customize formatting rules:
 Update the `scripts` section in your `package.json` file:
 ```json
 "scripts": {
-  "lint": "eslint . --ext .ts",
-  "lint:fix": "eslint . --ext .ts --fix"
+  "lint": "eslint .",
+  "lint:fix": "eslint . --fix"
 }
 ```
 
