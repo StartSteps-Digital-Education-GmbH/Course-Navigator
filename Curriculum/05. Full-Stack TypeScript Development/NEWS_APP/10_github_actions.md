@@ -1,15 +1,15 @@
-### **Guide: Setting Up GitHub Actions for Linting, Testing, and Docker Build**
+### Updated Guide: Setting Up GitHub Actions for Linting, Testing, and Docker Build
 
-This guide details how to configure **GitHub Actions** to automate **ESLint**, **Jest tests**, and verify Docker builds in the **News App** backend repository.
+This guide will walk you through setting up **GitHub Actions** to automate **ESLint**, **Jest tests**, and **Docker build validations** in your backend repository.
 
 ---
 
 ### **Why Use GitHub Actions?**
 
-1. **Automated CI/CD**: Run linting, testing, and Docker build validations on every pull request.
-2. **Catch Errors Early**: Avoid merging untested or poorly formatted code.
-3. **Streamlined Collaboration**: Ensure code quality checks before merging.
-4. **Free for Public Repos**: Generous usage limits for public repositories.
+1. **Automated CI/CD**: Automate linting, testing, and Docker builds on every pull request.
+2. **Catch Errors Early**: Prevent merging untested or poorly formatted code.
+3. **Streamlined Collaboration**: Ensure consistent code quality before merging.
+4. **Free for Public Repos**: GitHub provides generous limits for public repositories.
 
 ---
 
@@ -37,6 +37,21 @@ jobs:
     name: Lint and Test
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:15
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+        options: >-
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+          --health-cmd="pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"
+
     steps:
       # Step 1: Checkout the repository
       - name: Checkout repository
@@ -48,7 +63,7 @@ jobs:
         with:
           node-version: 18
 
-      # Step 3: Cache dependencies
+      # Step 3: Cache Dependencies
       - name: Cache Node.js modules
         uses: actions/cache@v3
         with:
@@ -101,15 +116,17 @@ jobs:
 ### **Workflow Explanation**
 
 #### **Lint and Test Job**
-1. **Install Node.js**: Ensures your app uses Node.js version 18.
-2. **Cache Dependencies**: Speeds up installs by caching `node_modules`.
-3. **Run ESLint**: Lints the code using your ESLint configuration.
-4. **Run Jest Tests**: Executes tests using the Jest configuration.
+1. **Checkout Repository**: Pulls the latest code from the repository.
+2. **Set Up Node.js**: Configures Node.js with the desired version (e.g., v18).
+3. **Cache Dependencies**: Caches `node_modules` to speed up subsequent runs.
+4. **Install Dependencies**: Installs required dependencies.
+5. **Run ESLint**: Runs `npm run lint` to check for code style issues and warnings.
+6. **Run Jest Tests**: Executes Jest tests to ensure your code is working as expected.
 
 #### **Docker Build Job**
-1. **DockerHub Login**: Logs into DockerHub using secrets for `DOCKER_USERNAME` and `DOCKER_PASSWORD`.
-2. **Build Docker Image**: Builds the Docker image from your `Dockerfile`.
-3. **Run Container**: Runs the Docker container to ensure the image works correctly.
+1. **DockerHub Login**: Logs into DockerHub using the stored secrets (`DOCKER_USERNAME` and `DOCKER_PASSWORD`).
+2. **Build Docker Image**: Builds the Docker image using the `Dockerfile`.
+3. **Run Container**: Runs the container to validate the image functionality.
 
 ---
 
@@ -161,4 +178,4 @@ Here’s an example step to run Jest inside Docker:
 
 ### **Conclusion**
 
-This setup ensures your **News App** backend repository automatically validates code quality, passes tests, and verifies Docker builds. Adopting this pipeline enhances reliability, simplifies collaboration, and accelerates CI/CD workflows.
+With this setup, your **News App** backend repository will automatically validate code quality, run tests, and verify Docker builds. This ensures reliable and streamlined CI/CD workflows, helping you catch errors early and improve collaboration.
