@@ -2,7 +2,7 @@
 
 #### **1. Authentication API**  
 
-**Base URL**: `/api/auth`  
+**Base URL**: `/api/users`  
 
 | **Endpoint**         | **Method** | **Description**              | **Auth** |  
 |-----------------------|------------|------------------------------|----------|  
