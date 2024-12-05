@@ -96,4 +96,4 @@
 2. Test all default behaviors (e.g., fallback to defaults when parameters are missing).
 3. Simulate success and failure scenarios, especially for external API interactions. (MOCK TEST)
 4. Cover authorization-specific endpoints with token validation.
-5. Handle edge cases like empty results, invalid inputs, or API unavailability.
+5. Handle edge cases like empty results, invalid inputs, or API unavailability. (may need to mock some of the cases)
