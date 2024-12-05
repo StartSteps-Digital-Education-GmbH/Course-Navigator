@@ -2,7 +2,7 @@
 
 ---
 
-1. **MVC (Model-View-Controller) Architecture**
+1. **[MVC](https://github.com/StartSteps-Digital-Education-GmbH/Course-Navigator/tree/main/Recapping%20Topics/MVC%20) (Model-View-Controller) Architecture**
 
 In this section, we'll dive into the MVC design pattern, a cornerstone of web development. You'll learn how MVC breaks down an application into three parts: Model, View, and Controller. This separation helps keep your code organized and manageable, especially as your projects grow. We'll look at examples like Express.js in NodeJS to see MVC in action and discuss why this pattern is so popular for building scalable applications.
 
