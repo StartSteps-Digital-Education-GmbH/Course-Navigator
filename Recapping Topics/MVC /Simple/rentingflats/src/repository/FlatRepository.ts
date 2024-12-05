@@ -1,0 +1,1 @@
+// here we add the database queries as typescript methods
