@@ -8,7 +8,7 @@ In this section, we'll dive into the MVC design pattern, a cornerstone of web de
 
 ---
 
-2. **HTTP/HTTPS with NodeJS**
+2. **[HTTP/HTTPS with NodeJS](https://github.com/StartSteps-Digital-Education-GmbH/Course-Navigator/tree/main/Recapping%20Topics/HTTP%20%7C%20HTTPS%20with%20NodeJS)**
 
 Here, we'll explore the basics of HTTP and HTTPS, the protocols that power the web. You'll learn how to set up a simple HTTP server using NodeJS, which is a great way to understand how web requests and responses work. We'll also cover the importance of HTTPS for securing data and how to implement it in your NodeJS applications. By the end of this section, you'll have hands-on experience building a basic server.
 
