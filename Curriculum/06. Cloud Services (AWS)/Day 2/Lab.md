@@ -35,7 +35,23 @@ React build files are required to render the frontend. These files are uploaded 
 2. Scroll to **Static Website Hosting** and enable it.  
 3. Enter `index.html` as the default document.  
 4. Copy the **Bucket Endpoint URL**.  
-
+5. If you receive 401, add this to bucket permission policy:
+`
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "AllowPublicRead",
+			"Effect": "Allow",
+			"Principal": {
+				"AWS": "*"
+			},
+			"Action": "s3:GetObject",
+			"Resource": "arn:aws:s3:::news-app-frontend/*"
+		}
+	]
+}
+`
 **Explanation**:  
 Static website hosting allows S3 to serve the files directly as a website.
 
