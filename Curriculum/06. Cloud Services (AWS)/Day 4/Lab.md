@@ -215,6 +215,158 @@ Testing ensures your application is running correctly and the frontend and backe
 
 ----------
 
+## **Potential Permission Requirements**
+
+### **IAM User Permissions for ECR**
+
+To create ECR repositories and push Docker images, ensure the user or role has the **AmazonEC2ContainerRegistryFullAccess** policy.
+
+#### **Steps to Verify Permissions**
+1. Check the attached policies for the IAM user or role.
+2. If using a custom policy, include actions like:
+    ```json
+   {
+     "Version": "2012-10-17",
+     "Statement": [
+       {
+         "Effect": "Allow",
+         "Action": [
+           "ecr:CreateRepository",
+           "ecr:PutImage",
+           "ecr:GetAuthorizationToken"
+         ],
+         "Resource": "*"
+       }
+     ]
+   }
+  
+
+
+----------
+
+### **IAM User Permissions for ECS**
+
+To create ECS clusters, task definitions, and services, ensure the user or role has the **AmazonECSFullAccess** policy.
+
+#### **Steps to Verify Permissions**
+
+1.  Confirm the attached policies include ECS access.
+2.  If using a custom policy, ensure it includes actions like:
+    
+    ```json
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "ecs:CreateCluster",
+            "ecs:RegisterTaskDefinition",
+            "ecs:CreateService",
+            "ecs:RunTask"
+          ],
+          "Resource": "*"
+        }
+      ]
+    }
+    
+    ```
+    
+
+----------
+
+### **Public Access for ECS Tasks**
+
+The ECS tasks (for React frontend and Express backend) require Security Groups allowing inbound traffic on their respective ports:
+
+-   **Frontend**: Port 3000
+-   **Backend**: Port 4000
+
+----------
+
+### **ECR Push and Login Commands**
+
+Ensure the user running `docker login` has a valid **ecr:GetAuthorizationToken** permission.
+
+----------
+
+### **Relevant Online Resources for Potential Permission Requirements**
+
+---
+
+## **IAM User Permissions for ECR**
+
+### **Policy Documentation**
+- **AmazonEC2ContainerRegistryFullAccess Policy**:  
+  Grants full access to manage ECR repositories, push Docker images, and obtain authorization tokens.  
+  [AmazonEC2ContainerRegistryFullAccess Policy Documentation](https://docs.aws.amazon.com/AmazonECR/latest/userguide/security-iam.html#iam-policy)
+
+### **Steps to Verify Permissions**
+1. **How to View Attached Policies**:  
+   Learn how to check the attached policies for an IAM user or role.  
+   [Viewing IAM Policies](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_manage-attach-detach.html)  
+
+2. **Creating Custom IAM Policies**:  
+   Guidance for creating a custom policy to include ECR permissions such as `ecr:CreateRepository` and `ecr:PutImage`.  
+   [AWS IAM Policy Creation](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_create.html)  
+
+3. **Using Amazon ECR**:  
+   Step-by-step guide on using Amazon ECR, including pushing and pulling images.  
+   [Getting Started with Amazon ECR](https://docs.aws.amazon.com/AmazonECR/latest/userguide/getting-started-cli.html)
+
+---
+
+## **IAM User Permissions for ECS**
+
+### **Policy Documentation**
+- **AmazonECSFullAccess Policy**:  
+  Provides full access to manage ECS clusters, task definitions, services, and tasks.  
+  [AmazonECSFullAccess Policy Documentation](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/security-iam.html)
+
+### **Steps to Verify Permissions**
+1. **Checking Attached Policies**:  
+   Learn how to check if a user or role has access to ECS services.  
+   [Viewing IAM Permissions](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_manage-attach-detach.html)
+
+2. **Creating Custom ECS IAM Policies**:  
+   Guide for creating a policy with specific actions like `ecs:CreateCluster` and `ecs:RegisterTaskDefinition`.  
+   [Custom ECS Policies Documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_examples.html#iam-policy-example-ecs)
+
+3. **ECS Role Requirements**:  
+   Ensure the IAM role assigned to ECS tasks has proper permissions.  
+   [ECS Task Role Permissions](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html)
+
+---
+
+## **Public Access for ECS Tasks**
+
+### **Security Group Configuration**
+1. **Allowing Inbound Traffic**:  
+   Learn how to allow specific ports (e.g., 3000 for frontend, 4000 for backend) in Security Groups.  
+   [AWS Security Group Configuration](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#sg-add-rule)  
+
+2. **Best Practices for Security Groups**:  
+   Guidance on securely configuring Security Groups for ECS tasks.  
+   [AWS Security Group Best Practices](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#sg-best-practices)  
+
+---
+
+## **ECR Push and Login Commands**
+
+### **Authenticating with Amazon ECR**
+1. **Docker Login for ECR**:  
+   Documentation on obtaining an authorization token to log in to ECR with `ecr:GetAuthorizationToken`.  
+   [Amazon ECR Docker Login](https://docs.aws.amazon.com/AmazonECR/latest/userguide/registry_auth.html)
+
+2. **Required IAM Permissions for ECR Push**:  
+   Ensure the user has `ecr:GetAuthorizationToken` and `ecr:PutImage` permissions.  
+   [Amazon ECR Permissions Reference](https://docs.aws.amazon.com/AmazonECR/latest/userguide/ecr-supported-iam-actions.html)
+
+---
+
+
+
+
 ## **Key Learning Outcomes**:
 
 1.  Write Dockerfiles to containerize frontend and backend applications.
