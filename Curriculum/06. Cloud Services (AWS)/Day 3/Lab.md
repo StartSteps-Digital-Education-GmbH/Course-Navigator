@@ -87,7 +87,122 @@ Security Groups act as firewalls to control access to AWS resources. You can cus
 **Online Resource**:  
 - [AWS Security Groups Documentation](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html)
 
+
 ---
+
+## Potential Permission Requirements:
+
+1.  **IAM User Permissions**:  
+    To create and manage VPCs, subnets, Internet Gateways, Route Tables, and Security Groups, the IAM user needs the following AWS-managed policies:
+    
+    -   **`AmazonVPCFullAccess`**
+    -   **`EC2FullAccess`**
+    
+    **Steps to Verify Permissions**:
+    
+    -   Ensure the IAM user or role being used has the above policies attached.
+    -   If a custom policy is used, include actions like:
+        
+        json
+        
+        Copy code
+        
+        ```
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "ec2:CreateSecurityGroup",
+                "ec2:AuthorizeSecurityGroupIngress",
+                "ec2:AuthorizeSecurityGroupEgress",
+                "ec2:CreateRouteTable",
+                "ec2:AssociateRouteTable",
+                "ec2:CreateSubnet",
+                "ec2:CreateInternetGateway",
+                "ec2:AttachInternetGateway"
+              ],
+              "Resource": "*"
+            }
+          ]
+        }
+        ``` 
+        
+    -   Confirm by testing access to the **VPC** and **Security Groups** services.
+2.  **Public Access for Resources in the Public Subnet**:  
+    After creating public subnets, you might need to adjust the Security Group to allow HTTP and HTTPS access:
+    
+    -   Add **Inbound Rules** for:
+        -   HTTP (Port 80)
+        -   HTTPS (Port 443)
+    -   Ensure the `0.0.0.0/0` CIDR block is used if you want to allow access from anywhere.
+
+### Online Resource: 
+
+####  **1. IAM User Permissions**
+
+#### **AWS-Managed Policies**
+
+-   **`AmazonVPCFullAccess` Policy**:  
+    Provides full access to manage VPC resources like subnets, route tables, and Internet Gateways.  
+    [AmazonVPCFullAccess Policy Documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_amazonvpc.html)
+    
+-   **`EC2FullAccess` Policy**:  
+    Grants full access to EC2 resources, including Security Groups and networking components.  
+    [EC2FullAccess Policy Documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/list_amazonec2.html)
+    
+
+#### **Steps to Verify Permissions**
+
+-   **Viewing Attached Policies for IAM Users or Roles**:  
+    Learn how to view and attach policies to IAM users, groups, or roles.  
+    [Managing IAM Policies](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_manage.html)
+
+#### **Custom Policy Creation**
+
+-   **How to Create and Attach a Custom IAM Policy**:  
+    Learn how to create custom policies with specific actions and attach them to users or roles.  
+    [Creating and Using IAM Policies](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_create.html)
+
+----------
+
+### **2. Public Access for Resources in the Public Subnet**
+
+#### **Allowing Public Access via Security Groups**
+
+-   **How to Add Inbound Rules to a Security Group**:  
+    Learn how to allow HTTP (Port 80) and HTTPS (Port 443) traffic to resources.  
+    [Adding Rules to a Security Group](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/working-with-security-groups.html#adding-security-group-rule)
+
+#### **CIDR Block Reference**
+
+-   **Understanding CIDR Blocks (`0.0.0.0/0`)**:  
+    Provides information on CIDR notation and how to use it for specifying IP ranges.  
+    [CIDR Block Documentation](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html#vpc-sizing-ipv4)
+
+#### **Security Best Practices**
+
+-   **AWS Security Group Best Practices**:  
+    Guidance on configuring secure and effective Security Groups.  
+    [Best Practices for Security Groups](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#sg-best-practices)
+
+----------
+
+### **Testing Access to VPC and Security Groups**
+
+-   **Verifying Access to VPC Resources**:  
+    Documentation on creating and accessing VPC resources to confirm permissions.  
+    [Getting Started with Amazon VPC](https://docs.aws.amazon.com/vpc/latest/userguide/getting-started-ipv4.html)
+    
+-   **Testing Security Group Rules**:  
+    Learn how to test and troubleshoot Security Group configurations.  
+    [Troubleshooting Security Groups](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-troubleshooting.html#troubleshooting-security-groups)
+    
+
+----------
+
+
 
 ## **Key Learning Outcomes**:
 1. Create and configure a custom VPC with public and private subnets.  
