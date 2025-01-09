@@ -70,6 +70,7 @@
 2.  [VPC Concepts](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html) 
 3. [AWS Security Groups Overview](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-security-groups.html) 
 4. [Network ACLs](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html)
+5. [VPC Simplified](https://github.com/StartSteps-Digital-Education-GmbH/Course-Navigator/tree/main/Curriculum/06.%20Cloud%20Services%20(AWS)/VPC%20%20Simplified)
 
 ### **Key Learning Outcomes**:
 - Understand how to create isolated networks using VPC.  
