@@ -194,15 +194,108 @@ To expose your application to the internet, use an **Application Load Balancer (
 ---
 
 ## **6. Verify Deployment**
+
+### **6.1 Check Logs and Status**
+
+#### **Using AWS CLI**
+1. Verify service status:
+   ```bash
+   aws ecs describe-services --cluster express-backend-cluster --services express-backend-service
+   ```
+
+2. Verify task status:
+   ```bash
+   aws ecs describe-tasks --cluster express-backend-cluster --tasks <task-id>
+   ```
+
+3. Check logs:
+   ```bash
+   aws logs get-log-events \
+       --log-group-name /aws/ecs/express-backend-cluster \
+       --log-stream-name <log-stream-name>
+   ```
+
+#### **Using AWS Console**
+1. Navigate to **ECS > Clusters > express-backend-cluster**.
+2. Select **Tasks** and check the status.
+3. Navigate to **CloudWatch > Log Groups** and view the logs for your ECS task.
+
+### **6.2 Test Endpoints Without Load Balancer**
+
+1. Get the public IP of your task:
+   - Using CLI:
+     ```bash
+     aws ecs describe-tasks --cluster express-backend-cluster --tasks <task-id>
+     ```
+     Look for `privateIPv4Address`.
+
+   - Using Console:
+     - Go to **ECS > Clusters > Tasks**.
+     - Select the task and find **Network Interface** → **Public IP**.
+
+2. Test using curl or Postman:
+   ```bash
+   curl http://<public-ip>:5000
+   ```
+
+### **6.3 Test Endpoints with Load Balancer**
+
+1. Get the DNS name of the load balancer:
+   - Using CLI:
+     ```bash
+     aws elbv2 describe-load-balancers --names express-backend-alb
+     ```
+     Look for the `DNSName` field.
+
+   - Using Console:
+     - Navigate to **EC2 > Load Balancers**.
+     - Select your ALB and find the DNS name in the details.
+
+2. Test using curl or Postman:
+   ```bash
+   curl http://<load-balancer-dns-name>
+   ```
+
+---
+
+## **7. Set Up Required IAM Roles**
+IAM roles provide permissions for ECS and Fargate.
+
 ### **Using AWS CLI**
-Check the service and task status:
-```bash
-aws ecs describe-services --cluster express-backend-cluster --services express-backend-service
-```
+1. Create an IAM role for ECS tasks:
+   ```bash
+   aws iam create-role --role-name ecsTaskExecutionRole --assume-role-policy-document file://trust-policy.json
+   ```
+   Save the following as `trust-policy.json`:
+   ```json
+   {
+       "Version": "2012-10-17",
+       "Statement": [
+           {
+               "Effect": "Allow",
+               "Principal": {
+                   "Service": "ecs-tasks.amazonaws.com"
+               },
+               "Action": "sts:AssumeRole"
+           }
+       ]
+   }
+   ```
+
+2. Attach required policies:
+   ```bash
+   aws iam attach-role-policy --role-name ecsTaskExecutionRole --policy-arn arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+   ```
+
+3. Update your task definition to use the `ecsTaskExecutionRole`.
 
 ### **Using AWS Console**
-1. Navigate to **ECS > Clusters > express-backend-cluster**.
-2. Check the service and task status.
-3. If using a load balancer, access your application via the ALB DNS name.
+1. Navigate to **IAM > Roles** and click **Create role**.
+2. Select **ECS Task** and click **Next**.
+3. Attach the policy **AmazonECSTaskExecutionRolePolicy**.
+4. Create the role and name it `ecsTaskExecutionRole`.
 
+---
+
+This completes the deployment guide. You can now access your backend via the load balancer DNS or the task public IP.
 
